@@ -1,4 +1,6 @@
-str = '''{"type":"gcSolidColorBrush","color":{"a":255,"r":0,"g":0,"b":0}}'''
+str = '''
+{"rc":500,"cc":100,"valueTypes":{"0":"Date","1":"Number"},"styleValueTypes":{"0":"GrapeCity.Marshmallow.SpreadSheet.Data.StyleInfo,GrapeCity.Marshmallow.SpreadSheet.Data"},"cellBlock":{"0":{"0":{"value":{"t":0,"v":"2012-03-01T16:00:00Z"},"style":{"t":0,"v":{"formatter":"General"}}},"1":{"value":{"t":1,"v":1.0}},"2":{"value":{"t":1,"v":1}}},"1":{"0":{"value":{"t":0,"v":"2013-06-08T16:00:00Z"},"style":{"t":0,"v":{"formatter":"General"}}},"1":{"value":{"t":1,"v":2.0}},"2":{"value":{"t":1,"v":2}}},"2":{"0":{"value":{"t":0,"v":"2018-12-20T16:00:00Z"},"style":{"t":0,"v":{"formatter":"General"}}},"1":{"value":{"t":1,"v":3.0}},"2":{"value":{"t":1,"v":3}}},"3":{"0":{"value":{"t":0,"v":"2014-02-02T16:00:00Z"},"style":{"t":0,"v":{"formatter":"General"}}},"2":{"value":{"t":1,"v":2}}}}}
+'''
 index = 0
 length = len(str)
 
@@ -82,7 +84,7 @@ def parse_true():
     global index, length, str
     true = "true"
     pos = 0
-    while pos < 5:
+    while pos < 4:
         if str[index] != true[pos]:
             raise SyntaxError(index)
         pos += 1
@@ -160,5 +162,45 @@ def skip_whitespace():
             index+=1
         else:
             break
+
+def parse_digits():
+    global index, length, str
+    start = index
+    while str[index].isdigit():
+        index+=1
+    if start != index:
+        return str[start:index]
+    raise SyntaxError(index)
+
+def parse_int():
+    global index, length, str
+    start = index
+    char = str[index]
+    if char == '0':
+        if str[index+1].isdigit():
+            raise SyntaxError(index+1)
+        else:
+            index += 1
+            return 0
+    if char == '-':
+        index += 1
+    elif char == '+':
+        index += 1
+    return parse_digits()
+
+def parse_frac():
+    global index, length, str
+    if str[index] == '.':
+        index += 1
+        return '.' + parse_digits()
+    raise SyntaxError(index+1)
+
+def parse_number():
+    global index, length, str
+    start = index
+    parse_int()
+    if str[index] == '.':
+        parse_frac()
+    return str[start:index]
 
 parse_json()

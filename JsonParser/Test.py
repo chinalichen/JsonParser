@@ -1,5 +1,17 @@
-def parse_digits():
+#def parse_digit():
+#    if str[index]>='0' and str[index]<='9':
+#        index+=1
+#        return true
+#    return false
 
+def parse_digits():
+    global index, length, str
+    start = index
+    while str[index].isdigit():
+        index+=1
+    if start != index:
+        return str[start:index]
+    raise SyntaxError(index)
 
 def parse_int():
     global index, length, str
@@ -15,18 +27,26 @@ def parse_int():
         index += 1
     elif char == '+':
         index += 1
-    while str[index].isdigit():
-        index += 1
-    return str[start: index]
+    return parse_digits()
 
 def parse_frac():
     global index, length, str
     if str[index] == '.':
         index += 1
-        int = parse_int()
-    return '.'+int
-str = ".+123}"
+        return '.' + parse_digits()
+    raise SyntaxError(index+1)
+
+def parse_number():
+    global index, length, str
+    start = index
+    parse_int()
+    if str[index] == '.':
+        parse_frac()
+    return str[start:index]
+    
+
+str = "-0.0asdfasdf}"
 index = 0
 length = len(str)
 
-print parse_frac()
+print parse_number()
